@@ -29,6 +29,10 @@ function dataloader:initialize(opt, split)
     -- answer
     if split == 'train' then
         self['ans'] = qa_data:read('/answers'):all()
+    elseif split == 'test' then
+        self['ques_id'] = qa_data:read('/question_id_test'):all()
+        self['ans_mc'] = qa_data:read('/MC_ans_test'):all()
+        self['test_id'] = 1
     end
     qa_data:close()
 end
@@ -42,9 +46,9 @@ function dataloader:next_batch(opt)
         iminds[i] = self['im_list'][qinds[i]]
     end
 
-    im = self['fv_im']:index(1, iminds)
-    ques = self['ques']:index(1, qinds)
-    labels = self['ans']:index(1, qinds)
+    local im = self['fv_im']:index(1, iminds)
+    local ques = self['ques']:index(1, qinds)
+    local labels = self['ans']:index(1, qinds)
 
     if opt.gpu >= 0 then
         im = im:cuda()
@@ -53,6 +57,32 @@ function dataloader:next_batch(opt)
     end
 
     return {im, ques, labels}
+end
+
+function dataloader:next_batch_eval(opt)
+    local start_id = self['test_id']
+    local end_id = math.min(start_id + opt.batch_size - 1, self['ques']:size(1))
+
+    local iminds = torch.LongTensor(end_id - start_id + 1):fill(0)
+    local qinds = torch.LongTensor(end_id - start_id + 1):fill(0)
+
+    for i = 1, end_id - start_id + 1 do
+        qinds[i] = start_id + i - 1
+        iminds[i] = self['im_list'][qinds[i]]
+    end
+
+    local im = self['fv_im']:index(1, iminds)
+    local ques = self['ques']:index(1, qinds)
+    local ques_id = self['ques_id']:index(1, qinds)
+
+    if opt.gpu >= 0 then
+        im = im:cuda()
+        ques = ques:cuda()
+    end
+
+    self['test_id'] = self['test_id'] + end_id - start_id + 1
+
+    return {im, ques, ques_id}
 end
 
 return dataloader

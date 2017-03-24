@@ -125,7 +125,7 @@ for iter = 1, opt.max_iters do
         paths.mkdir(opt.checkpoint_path)
         local save_file = string.format(opt.checkpoint_path .. 'iter_%d.t7', iter)
         print('Checkpointing to ' .. save_file)
-        torch.save(save_file, {model_params = model_params})
+        torch.save(save_file, {model_params = model_params, opt = opt})
     end
     state.learningRate = state.learningRate * opt.decay_factor
 end
