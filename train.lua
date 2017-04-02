@@ -13,8 +13,8 @@ opt = {
 
     -- model
     embedding_size = 200,
-    rnn_size = 1024,
-    im_tr_size = 1024,
+    rnn_size = 512,
+    im_tr_size = 512,
     num_attention_layers = 2,
     common_embedding_size = 512,
     num_output = 1000,

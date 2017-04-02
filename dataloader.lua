@@ -31,7 +31,6 @@ function dataloader:initialize(opt, split)
         self['ans'] = qa_data:read('/answers'):all()
     elseif split == 'test' then
         self['ques_id'] = qa_data:read('/question_id_test'):all()
-        self['ans_mc'] = qa_data:read('/MC_ans_test'):all()
         self['test_id'] = 1
     end
     qa_data:close()

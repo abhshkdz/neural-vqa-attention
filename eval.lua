@@ -13,12 +13,6 @@ opt = {
 
     -- model
     model_path = 'checkpoints/model.t7',
-    embedding_size = 200,
-    rnn_size = 1024,
-    im_tr_size = 1024,
-    num_attention_layers = 2,
-    common_embedding_size = 512,
-    num_output = 1000,
 
     -- misc
     batch_size = 500,
@@ -47,6 +41,11 @@ collectgarbage()
 
 print('Vocab size ' .. dataloader.vocab_size)
 
+if opt.gpu >= 0 then
+    require 'cutorch'
+    require 'cunn'
+end
+
 -- loading from checkpoint
 saved = torch.load(opt.model_path)
 
@@ -67,8 +66,6 @@ model = nn.Sequential()
 
 if opt.gpu >= 0 then
     print('Shipping to cuda')
-    require 'cutorch'
-    require 'cunn'
     model = model:cuda()
 end
 
@@ -92,8 +89,8 @@ end
 local num_batches = math.ceil(dataloader['ques']:size(1) / opt.batch_size)
 print('No. batches ' .. num_batches)
 
-local ques_id = torch.zeros(dataloader['ques']:size(1))
-local scores = torch.zeros(dataloader['ques']:size(1), opt.num_output)
+local ques_id = torch.LongTensor(dataloader['ques']:size(1)):fill(0)
+local scores = torch.zeros(dataloader['ques']:size(1), saved.opt.num_output)
 local maps = torch.zeros(saved.opt.num_attention_layers, dataloader['ques']:size(1), 14, 14)
 
 for i = 1, num_batches do
@@ -127,20 +124,20 @@ for i = 1, dataloader['ques']:size(1) do
 end
 write_json(opt.result_path .. 'OpenEnded_mscoco_lstm_results.json', oe_res)
 
-mc_res = {}
-for i = 1, dataloader['ques']:size(1) do
-    local mc_prob = {}
-    local tmp_id = {}
-    for j = 1, dataloader['ans_mc'][i]:size(1) do
-        if dataloader['ans_mc'][i][j] ~= 0 then
-            table.insert(mc_prob, scores[{i, dataloader['ans_mc'][i][j]}])
-            table.insert(tmp_id, dataloader['ans_mc'][i][j])
-        end
-    end
-    local _, tmp = torch.max(torch.Tensor(mc_prob), 1)
-    table.insert(mc_res, {question_id = ques_id[i], answer = dataloader['ix_to_ans'][tostring(tmp_id[tmp[1]])]})
-end
-write_json(opt.result_path .. 'MultipleChoice_mscoco_lstm_results.json', mc_res)
+-- mc_res = {}
+-- for i = 1, dataloader['ques']:size(1) do
+    -- local mc_prob = {}
+    -- local tmp_id = {}
+    -- for j = 1, dataloader['ans_mc'][i]:size(1) do
+        -- if dataloader['ans_mc'][i][j] ~= 0 then
+            -- table.insert(mc_prob, scores[{i, dataloader['ans_mc'][i][j]}])
+            -- table.insert(tmp_id, dataloader['ans_mc'][i][j])
+        -- end
+    -- end
+    -- local _, tmp = torch.max(torch.Tensor(mc_prob), 1)
+    -- table.insert(mc_res, {question_id = ques_id[i], answer = dataloader['ix_to_ans'][tostring(tmp_id[tmp[1]])]})
+-- end
+-- write_json(opt.result_path .. 'MultipleChoice_mscoco_lstm_results.json', mc_res)
 
 print('Writing to ' .. opt.result_path .. 'attention_maps.h5')
 local att_h5 = hdf5.open(opt.result_path .. 'attention_maps.h5', 'w')
