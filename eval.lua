@@ -75,14 +75,20 @@ model_params, model_grad_params = model:getParameters()
 model_params:copy(saved['model_params'])
 model:evaluate()
 
+-- softmax layers in san-k for k = 1, 2
+attention_layers = {{19}, {22, 35}}
+
 -- forward pass; returns scores and attention maps
 function forward(batch)
     local scores = model:forward({batch[1], batch[2]})
-    local maps_1 = model.modules[2].modules[22].output:float()
-    local maps_2 = model.modules[2].modules[35].output:float()
     local mapify = nn.View(-1, 14, 14)
+    local att_maps = {}
 
-    return {scores:float(), mapify:forward(maps_1), mapify:forward(maps_2)}
+    for i = 1, saved.opt.num_attention_layers do
+        table.insert(att_maps, mapify:forward(model.modules[2].modules[attention_layers[saved.opt.num_attention_layers][i]].output:float()))
+    end
+
+    return {scores:float(), att_maps}
 end
 
 -- eval loop
@@ -103,8 +109,9 @@ for i = 1, num_batches do
 
     ques_id[{{start_id, end_id}}] = batch[3]
     scores[{{start_id, end_id}, {}}] = output[1]
-    maps[{{1}, {start_id, end_id}, {}}] = output[2]
-    maps[{{2}, {start_id, end_id}, {}}] = output[3]
+    for j = 1, saved.opt.num_attention_layers do
+        maps[{{j}, {start_id, end_id}, {}}] = output[2][j]
+    end
 end
 
 _, preds = scores:max(2)
