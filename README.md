@@ -71,10 +71,15 @@ Trained on [VQA v1.9][5] `train`, a single attention layer model (SAN-1) gets **
 Other available VQA models are evaluated on VQA v1.0, which is a significantly easier dataset.
 For a point of reference, the [Deeper LSTM + Norm I][4] model from [Antol et al., ICCV15][6] gets 51.52 on VQA v1.9 `val`.
 
+#### VQA v1.0
+
+Trained on [VQA v1.0][6] `train`+`val`, SAN-2 gets **59.59** on `test-std`. This is slightly better than the best reported result in the [paper][1] (58.9). For comparison, [MCB][7] gets ~65.4 (66.7 for ensemble), [MLB][8] gets 65.07, [HieCoAtt][9] gets 62.1 and [Deeper LSTM + Norm I][4] gets 58.16.
+
 ## References
 
 - [Stacked Attention Networks for Image Question Answering][1], Yang et al., CVPR16
 - [Making the V in VQA Matter: Elevating the Role of Image Understanding in Visual Question Answering][11], Goyal and Khot et al., CVPR17
+- [VQA: Visual Question Answering][6], Antol et al., ICCV15
 
 
 ## Acknowledgements
