@@ -34,7 +34,7 @@ th prepro_img.lua -image_root /path/to/coco/images/ -gpuid 0
 
 ### Preprocess VQA dataset
 
-Pass `split` as `1` to train on COCO `train` and evaluate on COCO `val`, and `2` to train on COCO `train`+`val` and evaluate on COCO `test`.
+Pass `split` as `1` to train on `train` and evaluate on `val`, and `2` to train on `train`+`val` and evaluate on `test`.
 
 ```
 cd data/
