@@ -25,7 +25,12 @@ If you just want to run the model on your own images, download links to pretrain
 
 ### Extract image features
 
-TODO
+Since we don't finetune the CNN, training is significantly faster if image features are pre-extracted. We use image features from VGG-19. The model can be downloaded and features extracted using:
+
+```
+sh scripts/download_vgg19.sh
+th prepro_img.lua -image_root /path/to/coco/images/ -gpuid 0
+```
 
 ### Preprocess VQA dataset
 

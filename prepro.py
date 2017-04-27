@@ -248,8 +248,8 @@ if __name__ == "__main__":
     parser.add_argument('--input_test_json', required=True, help='input json file to process into hdf5')
     parser.add_argument('--num_ans', required=True, type=int, help='number of top answers for the final classifications.')
 
-    parser.add_argument('--output_json', default='params.json', help='output json file')
-    parser.add_argument('--output_h5', default='qa.h5', help='output h5 file')
+    parser.add_argument('--output_json', default='data/params.json', help='output json file')
+    parser.add_argument('--output_h5', default='data/qa.h5', help='output h5 file')
   
     # options
     parser.add_argument('--max_length', default=26, type=int, help='max length of a caption, in number of words. captions longer than this get clipped.')
