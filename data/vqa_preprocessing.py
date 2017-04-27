@@ -16,20 +16,22 @@ import os
 import argparse
 
 def download_vqa():
-    os.system('wget http://visualqa.org/data/mscoco/vqa/Questions_Train2017_mscoco.zip -P zip/')
-    os.system('http://visualqa.org/data/mscoco/vqa/Questions_Val2017_mscoco.zip -P zip/')
-    #  os.system('wget http://visualqa.org/data/mscoco/vqa/Questions_Test2017_mscoco.zip -P zip/')
+    # Download the VQA v2.0 Questions
+    os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Questions_Train_mscoco.zip -P zip/')
+    os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Questions_Val_mscoco.zip -P zip/')
+    os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Questions_Test_mscoco.zip -P zip/')
 
-    # Download the VQA Annotations
-    os.system('wget http://visualqa.org/data/mscoco/vqa/Annotations_Train2017_mscoco.zip -P zip/')
-    os.system('wget http://visualqa.org/data/mscoco/vqa/Annotations_Val2017_mscoco.zip -P zip/')
-
+    # Download the VQA v2.0 Annotations
+    os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Annotations_Train_mscoco.zip -P zip/')
+    os.system('wget http://visualqa.org/data/mscoco/vqa/v2_Annotations_Val_mscoco.zip -P zip/')
 
     # Unzip the annotations
-    os.system('unzip zip/Questions_Train2017_mscoco.zip -d annotations/')
-    os.system('unzip zip/Questions_Val2017_mscoco.zip -d annotations/')
-    os.system('unzip zip/Annotations_Train2017_mscoco.zip -d annotations/')
-    os.system('unzip zip/Annotations_Val2017_mscoco.zip -d annotations/')
+    os.system('unzip zip/v2_Questions_Train_mscoco.zip -d annotations/')
+    os.system('unzip zip/v2_Questions_Val_mscoco.zip -d annotations/')
+    os.system('unzip zip/v2_Questions_Test_mscoco.zip -d annotations/')
+
+    os.system('unzip zip/v2_Annotations_Train_mscoco.zip -d annotations/')
+    os.system('unzip zip/v2_Annotations_Val_mscoco.zip -d annotations/')
 
 
 def main(params):
@@ -44,32 +46,73 @@ def main(params):
     test = []
     imdir='%s/COCO_%s_%012d.jpg'
 
-    print 'Loading annotations and questions...'
-    train_anno = json.load(open('annotations/mscoco_train2017_annotations.json', 'r'))
-    val_anno = json.load(open('annotations/mscoco_val2017_annotations.json', 'r'))
+    if params['split'] == 1:
 
-    train_ques = json.load(open('annotations/OpenEnded_mscoco_train2017_questions.json', 'r'))
-    val_ques = json.load(open('annotations/OpenEnded_mscoco_val2017_questions.json', 'r'))
+        print 'Loading annotations and questions...'
+        train_anno = json.load(open('annotations/v2_mscoco_train2014_annotations.json', 'r'))
+        val_anno = json.load(open('annotations/v2_mscoco_val2014_annotations.json', 'r'))
 
-    subtype = 'train2017'
-    for i in range(len(train_anno['annotations'])):
-        ans = train_anno['annotations'][i]['multiple_choice_answer']
-        question_id = train_anno['annotations'][i]['question_id']
-        image_path = imdir%(subtype, subtype, train_anno['annotations'][i]['image_id'])
+        train_ques = json.load(open('annotations/v2_OpenEnded_mscoco_train2014_questions.json', 'r'))
+        val_ques = json.load(open('annotations/v2_OpenEnded_mscoco_val2014_questions.json', 'r'))
 
-        question = train_ques['questions'][i]['question']
+        subtype = 'train2014'
+        for i in range(len(train_anno['annotations'])):
+            ans = train_anno['annotations'][i]['multiple_choice_answer']
+            question_id = train_anno['annotations'][i]['question_id']
+            image_path = imdir%(subtype, subtype, train_anno['annotations'][i]['image_id'])
 
-        train.append({'ques_id': question_id, 'img_path': image_path, 'question': question, 'ans': ans})
+            question = train_ques['questions'][i]['question']
+
+            train.append({'ques_id': question_id, 'img_path': image_path, 'question': question, 'ans': ans})
+
+        subtype = 'val2014'
+        for i in range(len(val_anno['annotations'])):
+            ans = val_anno['annotations'][i]['multiple_choice_answer']
+            question_id = val_anno['annotations'][i]['question_id']
+            image_path = imdir%(subtype, subtype, val_anno['annotations'][i]['image_id'])
+
+            question = val_ques['questions'][i]['question']
+
+            test.append({'ques_id': question_id, 'img_path': image_path, 'question': question})
+
+    else:
+
+        print 'Loading annotations and questions...'
+        train_anno = json.load(open('annotations/v2_mscoco_train2014_annotations.json', 'r'))
+        val_anno = json.load(open('annotations/v2_mscoco_val2014_annotations.json', 'r'))
+
+        train_ques = json.load(open('annotations/v2_OpenEnded_mscoco_train2014_questions.json', 'r'))
+        val_ques = json.load(open('annotations/v2_OpenEnded_mscoco_val2014_questions.json', 'r'))
+        test_ques = json.load(open('annotations/v2_OpenEnded_mscoco_test2015_questions.json', 'r'))
+
+        subtype = 'train2014'
+        for i in range(len(train_anno['annotations'])):
+            ans = train_anno['annotations'][i]['multiple_choice_answer']
+            question_id = train_anno['annotations'][i]['question_id']
+            image_path = imdir%(subtype, subtype, train_anno['annotations'][i]['image_id'])
+
+            question = train_ques['questions'][i]['question']
+
+            train.append({'ques_id': question_id, 'img_path': image_path, 'question': question, 'ans': ans})
+
+        subtype = 'val2014'
+        for i in range(len(val_anno['annotations'])):
+            ans = val_anno['annotations'][i]['multiple_choice_answer']
+            question_id = val_anno['annotations'][i]['question_id']
+            image_path = imdir%(subtype, subtype, val_anno['annotations'][i]['image_id'])
+
+            question = val_ques['questions'][i]['question']
+
+            train.append({'ques_id': question_id, 'img_path': image_path, 'question': question, 'ans': ans})
  
-    subtype = 'val2017'
-    for i in range(len(val_anno['annotations'])):
-        ans = val_anno['annotations'][i]['multiple_choice_answer']
-        question_id = val_anno['annotations'][i]['question_id']
-        image_path = imdir%(subtype, subtype, val_anno['annotations'][i]['image_id'])
+        subtype = 'test2015'
+        for i in range(len(test_ques['questions'])):
+            question_id = test_ques['questions'][i]['question_id']
+            image_path = imdir%(subtype, subtype, test_ques['questions'][i]['image_id'])
 
-        question = val_ques['questions'][i]['question']
+            question = test_ques['questions'][i]['question']
 
-        test.append({'ques_id': question_id, 'img_path': image_path, 'question': question})
+            test.append({'ques_id': question_id, 'img_path': image_path, 'question': question})
 
     print 'Training sample %d, Testing sample %d...' %(len(train), len(test))
 

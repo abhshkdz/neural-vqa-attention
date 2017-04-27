@@ -29,10 +29,14 @@ TODO
 
 ### Preprocess VQA dataset
 
+Pass `split` as `1` to train on COCO `train` and evaluate on COCO `val`, and `2` to train on COCO `train`+`val` and evaluate on COCO `test`.
+
 ```
 cd data/
-python vqa_preprocessing.py --download True
+python vqa_preprocessing.py --download True --split 1
 cd ..
+```
+```
 python prepro.py --input_train_json data/vqa_raw_train.json --input_test_json data/vqa_raw_test.json --num_ans 1000
 ```
 
