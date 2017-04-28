@@ -1,6 +1,8 @@
 # neural-vqa-attention
 
-Torch implementation of an attention-based visual question answering model ([Yang et al., CVPR16][1]).
+Torch implementation of an attention-based visual question answering model ([Stacked Attention Networks for Image Question Answering, Yang et al., CVPR16][1]).
+
+![Imgur](http://i.imgur.com/VbqIRZz.png)
 
 1. [Train your own network](#train-your-own-network)
     1. [Extract image features](#extract-image-features)
