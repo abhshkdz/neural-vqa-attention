@@ -77,7 +77,7 @@ end
 
 local batch_size = opt.batch_size
 local sz=#train_list
-local feat_train=torch.FloatTensor(sz, 512, 14, 14)
+local feat_train=torch.FloatTensor(sz, 14, 14, 512)
 print(string.format('processing %d images...',sz))
 for i = 1, sz, batch_size do
     xlua.progress(i, sz)
@@ -90,7 +90,7 @@ for i = 1, sz, batch_size do
         ims = ims:cuda()
     end
     net:forward(ims)
-    feat_train[{{i,r}, {}}] = net.output:float()
+    feat_train[{{i,r}, {}}] = net.output:permute(1,3,4,2):contiguous():float()
     collectgarbage()
 end
 
@@ -100,7 +100,7 @@ train_h5_file:close()
 
 print('DataLoader loading h5 file: ', 'data_train')
 local sz = #test_list
-local feat_test = torch.FloatTensor(sz, 512, 14, 14)
+local feat_test = torch.FloatTensor(sz, 14, 14, 512)
 print(string.format('processing %d images...',sz))
 for i = 1, sz, batch_size do
     xlua.progress(i, sz)
@@ -113,7 +113,7 @@ for i = 1, sz, batch_size do
         ims = ims:cuda()
     end
     net:forward(ims)
-    feat_test[{{i,r}, {}}] = net.output:float()
+    feat_test[{{i,r}, {}}] = net.output:permute(1,3,4,2):contiguous():float()
     collectgarbage()
 end
 
