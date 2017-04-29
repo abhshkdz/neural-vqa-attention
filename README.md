@@ -58,15 +58,23 @@ th train.lua
 ### Pretrained models and data files
 
 All files available for download [here][10].
-- `san1_120000.t7`: pretrained model with 1 attention layer
-- `san2_150000.t7`: pretrained model with 2 attention layers
-- `params.json`: vocabulary file
-- `img_train.h5` & `img_test.h5` (optional): extracted COCO image features using VGG-19
-- `qa.h5` (optional): extracted VQA v1.9 features
+
+- `san1_2.t7`: model pretrained on `train`+`val` with 1 attention layer (SAN-1)
+- `san2_2.t7`: model pretrained on `train`+`val` with 2 attention layers (SAN-2)
+- `params_1.json`: vocabulary file for training on `train`, evaluating on `val`
+- `params_2.json`: vocabulary file for training on `train`+`val`, evaluating on `test`
+- `qa_1.h5`: QA features for training on `train`, evaluating on `val`
+- `qa_2.h5`: QA features for training on `train`+`val`, evaluating on `test`
+- `img_train_1.h5` & `img_test_1.h5`: image features for training on `train`, evaluating on `val`
+- `img_train_2.h5` & `img_test_2.h5`: image features for training on `train`+`val`, evaluating on `test`
 
 ### Running evaluation
 
-TODO
+```
+model_path=checkpoints/model.t7 qa_h5=data/qa.h5 params_json=data/params.json img_test_h5=data/img_test.h5 th eval.lua
+```
+
+This will generate a JSON file containing question ids and predicted answers. To compute accuracy on `val`, use [VQA Evaluation Tools][13]. For `test`, submit to [VQA evaluation server on EvalAI][14].
 
 ## Results
 
@@ -77,14 +85,27 @@ More results available [here][3].
 
 ### Quantitative Results
 
-Trained on [VQA v1.9][5] `train`, a single attention layer model (SAN-1) gets **53.01** VQA accuracy on `val`.
+Trained on `train` for `val` accuracies, and trained on `train`+`val` for `test` accuracies.
 
-Other available VQA models are evaluated on VQA v1.0, which is a significantly easier dataset.
-For a point of reference, the [Deeper LSTM + Norm I][4] model from [Antol et al., ICCV15][6] gets 51.52 on VQA v1.9 `val`.
+#### VQA v2.0
+
+| Method                | val     | test    |
+| ------                | ---     | ----    |
+| SAN-1                 | 53.15   | 55.28   |
+| SAN-2                 | 52.82   | -       |
+| [d-LSTM + n-I][4]     | 51.62   | 54.22   |
+| [HieCoAtt][9]         | 54.57   | -       |
+| [MCB][7]              | 59.14   | -       |
 
 #### VQA v1.0
 
-Trained on [VQA v1.0][6] `train`+`val`, SAN-2 gets **59.59** on `test-std`. This is slightly better than the best reported result in the [paper][1] (58.9). For comparison, [MCB][7] gets ~65.4 (66.7 for ensemble), [MLB][8] gets 65.07, [HieCoAtt][9] gets 62.1 and [Deeper LSTM + Norm I][4] gets 58.16.
+| Method                | test-std    |
+| ------                | --------    |
+| SAN-1                 | 59.87       |
+| SAN-2                 | 59.59       |
+| [d-LSTM + n-I][4]     | 58.16       |
+| [HieCoAtt][9]         | 62.10       |
+| [MCB][7]              | 65.40       |
 
 ## References
 
@@ -114,3 +135,5 @@ Trained on [VQA v1.0][6] `train`+`val`, SAN-2 gets **59.59** on `test-std`. This
 [10]: https://computing.ece.vt.edu/~abhshkdz/neural-vqa-attention/pretrained/
 [11]: https://arxiv.org/abs/1612.00837
 [12]: https://computing.ece.vt.edu/~abhshkdz/vqa-hat/
+[13]: https://github.com/VT-vision-lab/VQA
+[14]: https://evalai.cloudcv.org/featured-challenges/1/overview
