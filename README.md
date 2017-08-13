@@ -25,15 +25,6 @@ If you just want to run the model on your own images, download links to pretrain
 
 ## Train your own network
 
-### Extract image features
-
-Since we don't finetune the CNN, training is significantly faster if image features are pre-extracted. We use image features from VGG-19. The model can be downloaded and features extracted using:
-
-```
-sh scripts/download_vgg19.sh
-th prepro_img.lua -image_root /path/to/coco/images/ -gpuid 0
-```
-
 ### Preprocess VQA dataset
 
 Pass `split` as `1` to train on `train` and evaluate on `val`, and `2` to train on `train`+`val` and evaluate on `test`.
@@ -45,6 +36,15 @@ cd ..
 ```
 ```
 python prepro.py --input_train_json data/vqa_raw_train.json --input_test_json data/vqa_raw_test.json --num_ans 1000
+```
+
+### Extract image features
+
+Since we don't finetune the CNN, training is significantly faster if image features are pre-extracted. We use image features from VGG-19. The model can be downloaded and features extracted using:
+
+```
+sh scripts/download_vgg19.sh
+th prepro_img.lua -image_root /path/to/coco/images/ -gpuid 0
 ```
 
 ### Training
